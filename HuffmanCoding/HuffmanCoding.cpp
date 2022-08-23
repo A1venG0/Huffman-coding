@@ -1,199 +1,9 @@
+#include "Heap.h"
+#include "BST.h"
 #include <bits/stdc++.h>
 #include <ctime>
 
 using namespace std;
-
-
-class Heap { // heap class
-private:
-	int capacity; // size of the dynamic array
-	int realSize; // number of elements in the dynamic array
-	const int alpha = 2; // load factor
-	int* innerArray;
-
-	void siftDown(int aIndex) { //  siftDown for heapsort
-		int leftChild = getLeftChild(aIndex);
-		int rightChild = getRightChild(aIndex);
-
-		int maxIndex = aIndex;
-
-		if (leftChild < realSize && innerArray[maxIndex] < innerArray[leftChild]) { // if the left child is bigger
-			maxIndex = leftChild;
-		}
-
-		if (rightChild < realSize && innerArray[maxIndex] < innerArray[rightChild]) // if the right child is bigger
-			maxIndex = rightChild;
-
-		if (maxIndex != aIndex) {
-			swap(innerArray[maxIndex], innerArray[aIndex]);
-			siftDown(maxIndex); // recursive call
-		}
-	}
-
-	int getLeftChild(int aIndex) {
-		return 2 * aIndex + 1;
-	}
-
-	int getRightChild(int aIndex) {
-		return 2 * aIndex + 2;
-	}
-	int getParent(int aIndex) {
-		return (aIndex - 1) / 2;
-	}
-
-public:
-	Heap() { // heap constructor
-		capacity = 1;
-		realSize = 0;
-		innerArray = new int[capacity]; // dynamic memory allocation for the array
-	}
-
-	~Heap() { // destructor for deleting dynamically alocated memory
-		delete[] innerArray;
-	}
-
-	void push_back(int aObj) {
-		if (capacity == realSize) { // if the array is full
-			capacity *= alpha; // increase the capacity by load factor
-
-			int* newArray = new int[capacity];
-			
-			for (int i = 0; i < realSize; i++) // rewrite the elements present in the array into the new array with bigger capacity
-				newArray[i] = innerArray[i];
-
-			delete[] innerArray; // delete the old array
-
-			innerArray = newArray;
-
-		}
-		innerArray[realSize] = aObj;
-		realSize++;
-	}
-
-
-	void heapSort() {
-		for (int i = realSize - 1 / 2; i >= 0; i--) { // max-heap creation
-			siftDown(i);
-		}
-		
-		int k = realSize;
-		while(realSize != 0) { 
-			swap(innerArray[realSize - 1], innerArray[0]); // swap the biggest element with the last one
-			realSize--;
-			siftDown(0); // sift down the last element on it's correct position
-		}
-		realSize = k;
-	}
-
-	void print() {
-		for (int i = 0; i < realSize; i++) {
-			cout << innerArray[i] << ' ';
-		}
-		cout << endl;
-	}
-};
-
-
-
-
-struct Node {
-	int key;
-	Node* left, *right;
-};
-
-class BST {
-public:
-	Node* root;
-	int treeSize;
-	vector<int> array; // array for tree sort
-	BST() { // constructor for Binary search tree
-		root = NULL;
-		treeSize = 0;
-	}
-	~BST() { // destructor for deleting dynamically allocated memory
-		clear(root);
-		array.clear();
-	}
-
-	void insert(const int& aKey) { // wrapper for inserting elements
-		root = insert(root, aKey);
-	}
-
-	bool search(const int& aKey) { // wrapper for searching for elements
-		return search(root, aKey);
-	}
-
-	void treeSort() {
-
-		Node *tempNode = NULL;
-		tempNode = insert(tempNode, array[0]);
-		for (int i = 1; i < array.size(); i++) {
-			tempNode = insert(tempNode, array[i]); // binary search tree creation using given array
-		}
-		root = tempNode;
-
-		int i = 0;
-		storeSorted(tempNode, i); // storing elements in ascending order
-	}
-
-	void printBinTree(Node* aRoot, int aIndex) {
-		if (aRoot != NULL) {
-
-			printBinTree(aRoot->right, aIndex + 4);
-
-			cout << setw(aIndex) << " " << aRoot->key << endl;
-			printBinTree(aRoot->left, aIndex + 4);
-		}
-	}
-
-private:
-
-	Node* insert(Node* curNode, int aKey) {
-
-		if (curNode == NULL) { // we are past leaf and can insert given element at the current position
-			Node* newNode = new Node;
-			newNode -> key = aKey;
-			newNode -> right = newNode -> left = NULL;
-			treeSize++;
-			return newNode;
-		}
-
-		if (aKey < curNode -> key)
-			curNode -> left = insert(curNode -> left, aKey);
-		else 
-			curNode -> right = insert(curNode -> right, aKey);
-
-		return curNode;
-	}
-
-	void storeSorted(Node* aNode, int &aIndex) {
-
-		if (aNode != NULL) {
-			storeSorted(aNode -> left, aIndex); // recursively finding the minimum element
-			array[aIndex++] = aNode -> key; // storing the found element and incrementing the position
-			storeSorted(aNode -> right, aIndex);
-		}
-	}
-
-	Node* search(Node* aRoot, int aKey) {
-		if (aRoot == NULL || aRoot -> key == aKey) // if element is either found or not found
-			return aRoot;
-			
-		if (aKey < aRoot -> key)
-			return search(aRoot -> left, aKey);
-		
-		return search(aRoot -> right, aKey);
-	}
-
-	void clear(Node* aRoot) { // recursively deleting dynamically allocated memory
-		if (aRoot != NULL) {
-			clear(aRoot -> left);
-			delete aRoot;
-			clear(aRoot -> right);
-		}
-	}
-
-};
 
 
 struct HufNode {
@@ -407,7 +217,7 @@ int main() {
 							testSpeedHeap.push_back(rand() % 100'000 + 1);
 						}
 						clock_t start = clock();
-						testSpeedHeap.heapSort();
+						testSpeedHeap.heapsort();
 						clock_t end = clock();
 						float time = (float(end - start)) / CLOCKS_PER_SEC;
 						cout << endl;
@@ -419,7 +229,7 @@ int main() {
 					for (int i = 0; i < numsToSort.size(); i++)
 						heap.push_back(numsToSort[i]);
 
-					heap.heapSort();
+					heap.heapsort();
 					cout << "The sorted array using heapSort is: ";
 					heap.print();
 					cout << endl;
@@ -431,12 +241,12 @@ int main() {
 					
 
 					for (int i = 0; i < numsToSort.size(); i++)
-						tree.array.push_back(numsToSort[i]);
+						tree.arr.push_back(numsToSort[i]);
 
 					tree.treeSort();
 					cout << "The sorted array using treeSort is: ";
-					for (int i = 0; i < tree.array.size(); i++) {
-						cout << tree.array[i] << ' '; // printing the sorted array
+					for (int i = 0; i < tree.arr.size(); i++) {
+						cout << tree.arr[i] << ' '; // printing the sorted array
 					}
 					cout << endl;
 					cout << "--------------------------------" << endl;
