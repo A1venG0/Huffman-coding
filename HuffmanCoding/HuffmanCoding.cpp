@@ -4,29 +4,29 @@
 using namespace std;
 
 
-class Heap { // клас купи
+class Heap { // heap class
 private:
-	int capacity; // ємність динамічного масиву
-	int realSize; // кількість елементів у динамічному масиві
+	int capacity; // size of the dynamic array
+	int realSize; // number of elements in the dynamic array
 	const int alpha = 2; // load factor
 	int* innerArray;
 
-	void siftDown(int aIndex) { //  просіювання вниз для heapsort
+	void siftDown(int aIndex) { //  siftDown for heapsort
 		int leftChild = getLeftChild(aIndex);
 		int rightChild = getRightChild(aIndex);
 
 		int maxIndex = aIndex;
 
-		if (leftChild < realSize && innerArray[maxIndex] < innerArray[leftChild]) { // якщо ліва дитина більша
+		if (leftChild < realSize && innerArray[maxIndex] < innerArray[leftChild]) { // if the left child is bigger
 			maxIndex = leftChild;
 		}
 
-		if (rightChild < realSize && innerArray[maxIndex] < innerArray[rightChild]) // якщо права дитина більша
+		if (rightChild < realSize && innerArray[maxIndex] < innerArray[rightChild]) // if the right child is bigger
 			maxIndex = rightChild;
 
 		if (maxIndex != aIndex) {
 			swap(innerArray[maxIndex], innerArray[aIndex]);
-			siftDown(maxIndex); // рекурсивна реалізація
+			siftDown(maxIndex); // recursive call
 		}
 	}
 
@@ -42,26 +42,26 @@ private:
 	}
 
 public:
-	Heap() { // конструктор для купи
+	Heap() { // heap constructor
 		capacity = 1;
 		realSize = 0;
-		innerArray = new int[capacity]; // динамічне виділення пам'яті під масив
+		innerArray = new int[capacity]; // dynamic memory allocation for the array
 	}
 
-	~Heap() { // деструктор для видалення динамічно виділеної пам'яті
+	~Heap() { // destructor for deleting dynamically alocated memory
 		delete[] innerArray;
 	}
 
 	void push_back(int aObj) {
-		if (capacity == realSize) { // немає куди додавати елементи
-			capacity *= alpha;
+		if (capacity == realSize) { // if the array is full
+			capacity *= alpha; // increase the capacity by load factor
 
 			int* newArray = new int[capacity];
 			
-			for (int i = 0; i < realSize; i++) // перезапис елементів у масив більшої розмірності
+			for (int i = 0; i < realSize; i++) // rewrite the elements present in the array into the new array with bigger capacity
 				newArray[i] = innerArray[i];
 
-			delete[] innerArray; // видалення старого масиву
+			delete[] innerArray; // delete the old array
 
 			innerArray = newArray;
 
@@ -72,15 +72,15 @@ public:
 
 
 	void heapSort() {
-		for (int i = realSize - 1 / 2; i >= 0; i--) { // побудова max-heap
+		for (int i = realSize - 1 / 2; i >= 0; i--) { // max-heap creation
 			siftDown(i);
 		}
 		
 		int k = realSize;
 		while(realSize != 0) { 
-			swap(innerArray[realSize - 1], innerArray[0]); // обмін найбільшого елементу з останнім
+			swap(innerArray[realSize - 1], innerArray[0]); // swap the biggest element with the last one
 			realSize--;
-			siftDown(0); // просіювання елементу, з яким замінили найбільшого
+			siftDown(0); // sift down the last element on it's correct position
 		}
 		realSize = k;
 	}
@@ -105,21 +105,21 @@ class BST {
 public:
 	Node* root;
 	int treeSize;
-	vector<int> array; // масив для tree Sort
-	BST() { // конструктор для бінарного дерева пошуку
+	vector<int> array; // array for tree sort
+	BST() { // constructor for Binary search tree
 		root = NULL;
 		treeSize = 0;
 	}
-	~BST() { // деструктор для видалення динамічно виділеної пам'яті
+	~BST() { // destructor for deleting dynamically allocated memory
 		clear(root);
 		array.clear();
 	}
 
-	void insert(const int& aKey) { // обгортка для додавання елементів
+	void insert(const int& aKey) { // wrapper for inserting elements
 		root = insert(root, aKey);
 	}
 
-	bool search(const int& aKey) { // обгортка для пошуку елементів
+	bool search(const int& aKey) { // wrapper for searching for elements
 		return search(root, aKey);
 	}
 
@@ -128,12 +128,12 @@ public:
 		Node *tempNode = NULL;
 		tempNode = insert(tempNode, array[0]);
 		for (int i = 1; i < array.size(); i++) {
-			tempNode = insert(tempNode, array[i]); // побудова бінарного дерева пошуку з масиву array
+			tempNode = insert(tempNode, array[i]); // binary search tree creation using given array
 		}
 		root = tempNode;
 
 		int i = 0;
-		storeSorted(tempNode, i); // запис елементів у відсортованому порядку
+		storeSorted(tempNode, i); // storing elements in ascending order
 	}
 
 	void printBinTree(Node* aRoot, int aIndex) {
@@ -150,7 +150,7 @@ private:
 
 	Node* insert(Node* curNode, int aKey) {
 
-		if (curNode == NULL) { // знайшлося місце для додавання елемента
+		if (curNode == NULL) { // we are past leaf and can insert given element at the current position
 			Node* newNode = new Node;
 			newNode -> key = aKey;
 			newNode -> right = newNode -> left = NULL;
@@ -169,14 +169,14 @@ private:
 	void storeSorted(Node* aNode, int &aIndex) {
 
 		if (aNode != NULL) {
-			storeSorted(aNode -> left, aIndex); // рекурсивне знахождення мінімального
-			array[aIndex++] = aNode -> key; // запис до масиву елементу та збільшення індексу
+			storeSorted(aNode -> left, aIndex); // recursively finding the minimum element
+			array[aIndex++] = aNode -> key; // storing the found element and incrementing the position
 			storeSorted(aNode -> right, aIndex);
 		}
 	}
 
 	Node* search(Node* aRoot, int aKey) {
-		if (aRoot == NULL || aRoot -> key == aKey) // елемент не знайдено або знайдено
+		if (aRoot == NULL || aRoot -> key == aKey) // if element is either found or not found
 			return aRoot;
 			
 		if (aKey < aRoot -> key)
@@ -185,7 +185,7 @@ private:
 		return search(aRoot -> right, aKey);
 	}
 
-	void clear(Node* aRoot) { // рекурсивна реалізація очистки пам'яті для деструктора
+	void clear(Node* aRoot) { // recursively deleting dynamically allocated memory
 		if (aRoot != NULL) {
 			clear(aRoot -> left);
 			delete aRoot;
@@ -200,7 +200,7 @@ struct HufNode {
 	char data;
 	int freq;
 	HufNode *left, *right;
-	HufNode(char aData, int aFreq) { // конструктор для вузла дерева Хаффмана
+	HufNode(char aData, int aFreq) { // constructor for Huffman node
 		data = aData;
 		freq = aFreq;
 		left = right = NULL;
@@ -208,14 +208,14 @@ struct HufNode {
 };
 
 
-class BitwiseWrite { // побітовий запис у файл
+class BitwiseWrite { // bitwise writing in the file
 private:
 	char buf;
 	ostream& out;
 	int totalBits;
 
 public:
-	BitwiseWrite(ostream & os) : out(os), buf(0), totalBits(0) { // очищення буферу та записаних бітів
+	BitwiseWrite(ostream & os) : out(os), buf(0), totalBits(0) { // clearing the buffer and written bits
 
   	}
 	void flush();
@@ -223,12 +223,12 @@ public:
 };
 
 void BitwiseWrite::flush() { 
-	out.put(buf); // запис буферу до файлу
-	out.flush(); // очищення буферу файлу
+	out.put(buf); // writing buffer to the file
+	out.flush(); // clearing the buffer
 	totalBits = buf = 0;
 }
 
-void BitwiseWrite::writeBit(int aInteger) { // функція для перетворення бітів у байт та його запис
+void BitwiseWrite::writeBit(int aInteger) { // fuction for converting 8 bits into a byte and storing it
 
 	if (aInteger == -1) {
 		flush();
@@ -252,7 +252,7 @@ void BitwiseWrite::writeBit(int aInteger) { // функція для перет�
 	totalBits++;
 }
 
-class BitwiseRead { // побітове читання з файлу
+class BitwiseRead { // bitwise reading from a file
 private:
 	char buf;
 	istream& in;
@@ -269,7 +269,7 @@ BitwiseRead::BitwiseRead(istream& input) : in(input) {
 	totalBits = 0;
 }
 
-void BitwiseRead::fill() { // заповнення буферу байтом
+void BitwiseRead::fill() { // writing a byte into the buffer
 	buf = in.get();
 	totalBits = 0;
 }
@@ -290,7 +290,7 @@ int BitwiseRead::readBit() {
 }
 
 struct comp {
-	bool operator()(HufNode* fNode, HufNode* sNode) { // перевантаження оператора для порівняння
+	bool operator()(HufNode* fNode, HufNode* sNode) { // overloading operator for comparing Huffman nodes
 		return (fNode -> freq > sNode -> freq);
 	}
 };
@@ -298,13 +298,13 @@ struct comp {
 void printCodes(HufNode* aRoot, string str, unordered_map<char, string>& aCharacterMap) {
 	if (!aRoot)
 		return;
-	if (aRoot -> data != '^') { // якщо не спеціальний символ дерева
+	if (aRoot -> data != '^') { // special symbol in the tree, meaning that it is a connection between two elements
 		aCharacterMap[aRoot-> data] = str;
 		cout << aRoot -> data << ": " << str << endl;
 	}
 	
-	printCodes(aRoot -> left, str + "0", aCharacterMap); // додаємо 0 до коду при проходженні ліворуч
-	printCodes(aRoot -> right, str + "1", aCharacterMap); // додаємо 1 до коду при проходженні праворуч
+	printCodes(aRoot -> left, str + "0", aCharacterMap); // adding 0 to the code when going left
+	printCodes(aRoot -> right, str + "1", aCharacterMap); // adding 1 to the code when going right
 }
 
 
@@ -315,7 +315,7 @@ void HuffmanCodes(map<char, int>& table, unordered_map<char, string>& aCharacter
 	//priority_queue<HufNode*, vector<HufNode*>, comp> minHeap;
 	map<char, int>:: iterator itr;
 	for (itr = table.begin(); itr != table.end(); itr++) {
-		aMinHeap.push(new HufNode(itr -> first, itr -> second)); // додавання елементів в пріорітетну чергу
+		aMinHeap.push(new HufNode(itr -> first, itr -> second)); // adding elements to the priority queue
 	}
 
 	while (aMinHeap.size() != 0) {
@@ -324,24 +324,24 @@ void HuffmanCodes(map<char, int>& table, unordered_map<char, string>& aCharacter
 		right = aMinHeap.top();
 		aMinHeap.pop();
 
-		top = new HufNode('^', left -> freq + right -> freq); // побудова дерева Хаффмана
+		top = new HufNode('^', left -> freq + right -> freq); // creating a Huffman tree
 
 		top -> left = left;
 		top -> right = right;
 		aMinHeap.push(top);
 	}
-	printCodes(aMinHeap.top(), "", aCharacterMap); // обхід дерева для визначення кодів символів
+	printCodes(aMinHeap.top(), "", aCharacterMap); // traversing through a Huffman tree to get codes
 }
 
-char decode(BitwiseRead &in, priority_queue<HufNode*, vector<HufNode*>, comp>& aMinHeap, int& aHeader) { // декодування інформації для перевірки
+char decode(BitwiseRead &in, priority_queue<HufNode*, vector<HufNode*>, comp>& aMinHeap, int& aHeader) { // decoding information to check for correctness
 	HufNode* temp = aMinHeap.top();
 	int bit;
 	while (true) {
-		bit = in.readBit(); // побітове читання
+		bit = in.readBit(); // bitwise reading
 		if (bit == 1)
 			temp = temp -> right;
 		if (bit == 0) {
-			aHeader++; // перший байт 0 завжди у файлі
+			aHeader++; // first byte 0 is always present in the file
 			temp = temp -> left;
 		}
 		if (temp -> right == NULL || temp -> left == NULL)
@@ -350,7 +350,7 @@ char decode(BitwiseRead &in, priority_queue<HufNode*, vector<HufNode*>, comp>& a
 	return temp -> data;
 }
 
-void printTree(ostream &out, HufNode* aRoot, int aIndex) { // виведення дерева Хаффмана
+void printTree(ostream &out, HufNode* aRoot, int aIndex) { // printing the Huffman tree
 	if (aRoot != NULL) {
 
 
@@ -376,7 +376,7 @@ int main() {
 		cout << "1. Sorting elements" << endl;
 		cout << "2. Searching for elements" << endl;
 		cout << "3. Huffman encoding" << endl;
-		char c; // вибір операції
+		char c; // chosing the operation
 		cin >> c;
 
 		char temp;
@@ -389,7 +389,7 @@ int main() {
 				cout << "Enter the size of your array: ";
 				int sizeOfSortArray;
 				cin >> sizeOfSortArray;
-				vector<int> numsToSort(sizeOfSortArray); // масив значень для сортування
+				vector<int> numsToSort(sizeOfSortArray); // array of values for sorting
 				cout << "Enter your array: ";
 				for (int i = 0; i < sizeOfSortArray; i++) {
 					cin >> numsToSort[i];
@@ -397,7 +397,7 @@ int main() {
 
 				if (temp == '1') {
 					Heap heap;
-					Heap testSpeedHeap; // купа для перевірки швидкості
+					Heap testSpeedHeap; // heap for testing runtime
 					cout << "Do you want to test the speed of this algorithm on 100 000 elements? (y for YES, n for NO) ";
 					char speed;
 					cin >> speed;
@@ -426,7 +426,7 @@ int main() {
 				}
 				else if (temp == '2') {
 					BST tree;
-					BST testSpeedTree; // бінарне дерево пошуку для перевірки швидкості
+					BST testSpeedTree; // binary search tree for testing runtime
 
 					
 
@@ -436,7 +436,7 @@ int main() {
 					tree.treeSort();
 					cout << "The sorted array using treeSort is: ";
 					for (int i = 0; i < tree.array.size(); i++) {
-						cout << tree.array[i] << ' '; // виведення відсортованого масиву
+						cout << tree.array[i] << ' '; // printing the sorted array
 					}
 					cout << endl;
 					cout << "--------------------------------" << endl;
@@ -493,24 +493,24 @@ int main() {
 			cin >> filename;
 
 			int length = filename.size();
-			string compressedFilename = filename; // перетворення формату у .cmp
+			string compressedFilename = filename; // changing the file format into .cmp
 			compressedFilename[length - 1] = 'p';
 			compressedFilename[length - 2] = 'm';
 			compressedFilename[length - 3] = 'c';
 
 
 			ifstream F;
-			map<char, int> frequency; // частота символів
-			unordered_map<char, string> charBits; // символ та код
+			map<char, int> frequency; // frequency of the characters
+			unordered_map<char, string> charBits; // symbol and its code
 
 			F.open(filename);
 			if (F) {
 				while(true) {
 					char tempForSymbols;
-					F >> std::noskipws >> tempForSymbols; // читання посимвольно з пробілами
+					F >> std::noskipws >> tempForSymbols; // reading symbol by symbol
 
 					if (F.eof()) {
-						char eof = '#'; // символ кінця файлу для декодування
+						char eof = '#'; // symbol of the end of the file
 						frequency[eof] = 1;
 						break;
 					}
@@ -547,12 +547,12 @@ int main() {
 					char tempForFile;
 					F >> std::noskipws >> tempForFile;
 
-					string code = charBits[tempForFile]; // читання коду символу
+					string code = charBits[tempForFile]; // reading the code of the symbol
 					if (F.eof()) { 
 						tempForFile = '#';
 						code = charBits[tempForFile];
 						for (int i = 0; i < code.size(); i++) {
-							s.writeBit(code[i] - '0'); // якщо кінець файлу, додавання спеціального символу
+							s.writeBit(code[i] - '0'); // of the end of the file, add special symbol
 						}
 						break;
 					}
@@ -562,7 +562,7 @@ int main() {
 					}
 
 				}
-				s.writeBit(-1); // завершення запису навіть якщо у буфері не 8 біт
+				s.writeBit(-1); // ending the writing even if the buffer doesn't have 8 bits
 				cout << "Encoding successfully finished!" << endl;
 			}
 			else {
@@ -585,15 +585,15 @@ int main() {
 				if (F && ofs) {
 					char data;
 					char eof = '#';
-					int header = 0; // для 8 бітів на початку
+					int header = 0; // for 8 bits on the start
 					while (true) {
-						data = decode(file, minHeap, header); // перетворення бітів у символ
-						if (header <= 8) // 8 бітів на початку 0
+						data = decode(file, minHeap, header); // converting bits into a symbol
+						if (header <= 8) // 8 bits are 0 in the beginning
 							continue;
 						if (data == eof) {
 							break;
 						}
-						ofs << data; // запис до файлу
+						ofs << data; // writing to the file
 					}
 					cout << "Decompression finished successfully!" << endl;
 				}
@@ -612,7 +612,7 @@ int main() {
 		cout << "Do you want to choose another operation? (y for YES, n for NO): ";
 		cin >> exitCondition;
 		exitCondition = tolower(exitCondition);
-			if (exitCondition == 'n') // Завершення роботи програми
+			if (exitCondition == 'n') // the end of the program execution
 				break;
 	}
 }
