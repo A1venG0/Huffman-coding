@@ -20,7 +20,7 @@ void Heap::siftDown(int aIndex) { //  siftDown for heapsort
 
 	if (maxIndex != aIndex) {
 		swap(innerArray[maxIndex], innerArray[aIndex]);
-		Heap::siftDown(maxIndex); // recursive call
+		siftDown(maxIndex); // recursive call
 	}
 }
 
@@ -73,14 +73,14 @@ void Heap::print() {
 
 void Heap::heapsort() {
 	for (int i = realSize - 1 / 2; i >= 0; i--) { // max-heap creation
-		Heap::siftDown(i);
+		siftDown(i);
 	}
 		
 	int k = realSize;
 	while(realSize != 0) { 
 		swap(innerArray[realSize - 1], innerArray[0]); // swap the biggest element with the last one
 		realSize--;
-		Heap::siftDown(0); // sift down the last element on it's correct position
+		siftDown(0); // sift down the last element on it's correct position
 	}
 	realSize = k;
 }
