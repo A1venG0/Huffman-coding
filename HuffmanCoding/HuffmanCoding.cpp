@@ -1,5 +1,6 @@
 #include "Heap.h"
 #include "BST.h"
+#include "BitwiseWrite.h"
 #include <bits/stdc++.h>
 #include <ctime>
 
@@ -17,50 +18,6 @@ struct HufNode {
 	}
 };
 
-
-class BitwiseWrite { // bitwise writing in the file
-private:
-	char buf;
-	ostream& out;
-	int totalBits;
-
-public:
-	BitwiseWrite(ostream & os) : out(os), buf(0), totalBits(0) { // clearing the buffer and written bits
-
-  	}
-	void flush();
-	void writeBit(int aInteger);
-};
-
-void BitwiseWrite::flush() { 
-	out.put(buf); // writing buffer to the file
-	out.flush(); // clearing the buffer
-	totalBits = buf = 0;
-}
-
-void BitwiseWrite::writeBit(int aInteger) { // fuction for converting 8 bits into a byte and storing it
-
-	if (aInteger == -1) {
-		flush();
-	}
-
-	if (totalBits == 8) {
-		flush();
-	}
-
-	unsigned char bitmask = 1;
-	if (aInteger == 1) {
-		bitmask = bitmask << (7 - totalBits);
-		buf = buf | bitmask;
-	}
-
-	if (aInteger == 0) {
-		bitmask = bitmask << (7 - totalBits);
-		bitmask = ~bitmask;
-		buf = buf & bitmask;
-	}
-	totalBits++;
-}
 
 class BitwiseRead { // bitwise reading from a file
 private:
