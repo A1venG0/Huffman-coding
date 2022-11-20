@@ -64,7 +64,7 @@ void HuffmanCodes(map<char, int>& table, unordered_map<char, string>& aCharacter
 	printCodes(aMinHeap.top(), "", aCharacterMap); // traversing through a Huffman tree to get codes
 }
 
-char decode(BitwiseRead &in, priority_queue<HufNode*, vector<HufNode*>, comp>& aMinHeap, int& aHeader) { // decoding information to check for correctness
+char decode(BitwiseRead &in, priority_queue<HufNode*, vector<HufNode*>, comp>& aMinHeap) { // decoding information to check for correctness
 	HufNode* temp = aMinHeap.top();
 	int bit;
 	while (true) {
@@ -72,7 +72,6 @@ char decode(BitwiseRead &in, priority_queue<HufNode*, vector<HufNode*>, comp>& a
 		if (bit == 1)
 			temp = temp -> right;
 		if (bit == 0) {
-			aHeader++; // first byte 0 is always present in the file
 			temp = temp -> left;
 		}
 		if (temp -> right == NULL || temp -> left == NULL)
@@ -316,11 +315,11 @@ int main() {
 				if (F && ofs) {
 					char data;
 					char eof = '#';
-					int header = 0; // for 8 bits on the start
+					for (int i = 0; i < 8; i++) { // first byte is for header information, so skip it while decoding
+						file.readBit();
+					}
 					while (true) {
-						data = decode(file, minHeap, header); // converting bits into a symbol
-						if (header <= 8) // 8 bits are 0 in the beginning
-							continue;
+						data = decode(file, minHeap); // converting bits into a symbol
 						if (data == eof) {
 							break;
 						}
